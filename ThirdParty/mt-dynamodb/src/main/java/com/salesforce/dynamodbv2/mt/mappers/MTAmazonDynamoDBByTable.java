@@ -66,216 +66,251 @@ import com.salesforce.dynamodbv2.mt.context.MTAmazonDynamoDBContextProvider;
  */
 public class MTAmazonDynamoDBByTable extends MTAmazonDynamoDBBase {
 
-	private static final Logger logger = LoggerFactory.getLogger(MTAmazonDynamoDBByTable.class);
- 
+	private static final Logger logger = LoggerFactory
+			.getLogger(MTAmazonDynamoDBByTable.class);
+
 	private final String delimiter;
-    private final Optional<String> tablePrefix;
+	private final Optional<String> tablePrefix;
 
-    private MTAmazonDynamoDBByTable(MTAmazonDynamoDBContextProvider mtContext, AmazonDynamoDB amazonDynamoDB,
-            String delimiter, Optional<String> tablePrefix) {
-        super(mtContext, amazonDynamoDB);
-        this.delimiter = delimiter;
-        this.tablePrefix = tablePrefix;
-        logger.info("Delim: " + delimiter + ", tblPrefix: " + tablePrefix);
-    }
+	public MTAmazonDynamoDBByTable(MTAmazonDynamoDBContextProvider mtContext,
+			AmazonDynamoDB amazonDynamoDB, String delimiter,
+			String tablePrefix) {
+		this(mtContext, amazonDynamoDB, delimiter, Optional.of(tablePrefix));
+	}
 
-    public CreateTableResult createTable(CreateTableRequest createTableRequest) {
-        createTableRequest = createTableRequest.clone();
-        createTableRequest.withTableName(buildPrefixedTablename(createTableRequest.getTableName()));
-        logger.info("createTableRequest: " + createTableRequest);
-        return getAmazonDynamoDB().createTable(createTableRequest);
-    }
+	private MTAmazonDynamoDBByTable(MTAmazonDynamoDBContextProvider mtContext,
+			AmazonDynamoDB amazonDynamoDB, String delimiter,
+			Optional<String> tablePrefix) {
+		super(mtContext, amazonDynamoDB);
+		this.delimiter = delimiter;
+		this.tablePrefix = tablePrefix;
+		logger.info("Delim: " + delimiter + ", tblPrefix: " + tablePrefix);
+	}
 
-    public DeleteItemResult deleteItem(DeleteItemRequest deleteItemRequest) {
-        deleteItemRequest = deleteItemRequest.clone();
-        deleteItemRequest.withTableName(buildPrefixedTablename(deleteItemRequest.getTableName()));
-        logger.info("deleteItemRequest: " + deleteItemRequest);
-        return getAmazonDynamoDB().deleteItem(deleteItemRequest);
-    }
+	public CreateTableResult createTable(CreateTableRequest createTableRequest) {
+		createTableRequest = createTableRequest.clone();
+		createTableRequest
+				.withTableName(buildPrefixedTablename(createTableRequest.getTableName()));
+		logger.info("createTableRequest: " + createTableRequest);
+		return getAmazonDynamoDB().createTable(createTableRequest);
+	}
 
-    public DeleteTableResult deleteTable(DeleteTableRequest deleteTableRequest) {
-        String virtualTableName = deleteTableRequest.getTableName();
-        deleteTableRequest = deleteTableRequest.clone();
-        deleteTableRequest.withTableName(buildPrefixedTablename(deleteTableRequest.getTableName()));
-        logger.info("deleteTableRequest: " + deleteTableRequest);
-        DeleteTableResult deleteTableResult = getAmazonDynamoDB().deleteTable(deleteTableRequest);
-        deleteTableResult.getTableDescription().setTableName(virtualTableName);
-        return deleteTableResult;
-    }
+	public DeleteItemResult deleteItem(DeleteItemRequest deleteItemRequest) {
+		deleteItemRequest = deleteItemRequest.clone();
+		deleteItemRequest
+				.withTableName(buildPrefixedTablename(deleteItemRequest.getTableName()));
+		logger.info("deleteItemRequest: " + deleteItemRequest);
+		return getAmazonDynamoDB().deleteItem(deleteItemRequest);
+	}
 
-    public DescribeTableResult describeTable(DescribeTableRequest describeTableRequest) {
-        String virtualTableName = describeTableRequest.getTableName();
-        describeTableRequest = describeTableRequest.clone();
-        describeTableRequest.withTableName(buildPrefixedTablename(describeTableRequest.getTableName()));
-        logger.info("describeTableRequest: " + describeTableRequest);
-        DescribeTableResult describeTableResult = getAmazonDynamoDB().describeTable(describeTableRequest);
-        describeTableResult.getTable().setTableName(virtualTableName);
-        return describeTableResult;
-    }
+	public DeleteTableResult deleteTable(DeleteTableRequest deleteTableRequest) {
+		String virtualTableName = deleteTableRequest.getTableName();
+		deleteTableRequest = deleteTableRequest.clone();
+		deleteTableRequest
+				.withTableName(buildPrefixedTablename(deleteTableRequest.getTableName()));
+		logger.info("deleteTableRequest: " + deleteTableRequest);
+		DeleteTableResult deleteTableResult = getAmazonDynamoDB()
+				.deleteTable(deleteTableRequest);
+		deleteTableResult.getTableDescription().setTableName(virtualTableName);
+		return deleteTableResult;
+	}
 
-    public GetItemResult getItem(GetItemRequest getItemRequest) {
-        getItemRequest = getItemRequest.clone();
-        String prefixedTableName = buildPrefixedTablename(getItemRequest.getTableName());
-        getItemRequest.withTableName(prefixedTableName);
-        logger.info("getItemRequest: " + getItemRequest);
-        return getAmazonDynamoDB().getItem(getItemRequest);
-    }
+	public DescribeTableResult describeTable(DescribeTableRequest describeTableRequest) {
+		String virtualTableName = describeTableRequest.getTableName();
+		describeTableRequest = describeTableRequest.clone();
+		describeTableRequest.withTableName(
+				buildPrefixedTablename(describeTableRequest.getTableName()));
+		logger.info("describeTableRequest: " + describeTableRequest);
+		DescribeTableResult describeTableResult = getAmazonDynamoDB()
+				.describeTable(describeTableRequest);
+		describeTableResult.getTable().setTableName(virtualTableName);
+		return describeTableResult;
+	}
 
-    public PutItemResult putItem(PutItemRequest putItemRequest) {
-        putItemRequest = putItemRequest.clone();
-        putItemRequest.withTableName(buildPrefixedTablename(putItemRequest.getTableName()));
-        logger.info("putItemRequest: " + putItemRequest);
-        return getAmazonDynamoDB().putItem(putItemRequest);
-    }
+	public GetItemResult getItem(GetItemRequest getItemRequest) {
+		getItemRequest = getItemRequest.clone();
+		String prefixedTableName = buildPrefixedTablename(getItemRequest.getTableName());
+		getItemRequest.withTableName(prefixedTableName);
+		logger.info("getItemRequest: " + getItemRequest);
+		return getAmazonDynamoDB().getItem(getItemRequest);
+	}
 
-    public QueryResult query(QueryRequest queryRequest) {
-        queryRequest = queryRequest.clone();
-        queryRequest.withTableName(buildPrefixedTablename(queryRequest.getTableName()));
-        logger.info("queryRequest: " + queryRequest);
-        return getAmazonDynamoDB().query(queryRequest);
-    }
+	public PutItemResult putItem(PutItemRequest putItemRequest) {
+		putItemRequest = putItemRequest.clone();
+		putItemRequest
+				.withTableName(buildPrefixedTablename(putItemRequest.getTableName()));
+		logger.info("putItemRequest: " + putItemRequest);
+		return getAmazonDynamoDB().putItem(putItemRequest);
+	}
 
-    public ScanResult scan(ScanRequest scanRequest) {
-        scanRequest = scanRequest.clone();
-        scanRequest.withTableName(buildPrefixedTablename(scanRequest.getTableName()));
-        logger.info("scanRequest: " + scanRequest);
-        return getAmazonDynamoDB().scan(scanRequest);
-    }
+	public QueryResult query(QueryRequest queryRequest) {
+		queryRequest = queryRequest.clone();
+		queryRequest.withTableName(buildPrefixedTablename(queryRequest.getTableName()));
+		logger.info("queryRequest: " + queryRequest);
+		return getAmazonDynamoDB().query(queryRequest);
+	}
 
-    public UpdateItemResult updateItem(UpdateItemRequest updateItemRequest) {
-        updateItemRequest = updateItemRequest.clone();
-        updateItemRequest.withTableName(buildPrefixedTablename(updateItemRequest.getTableName()));
-        logger.info("updateItemRequest: " + updateItemRequest);
-        return getAmazonDynamoDB().updateItem(updateItemRequest);
-    }
+	public ScanResult scan(ScanRequest scanRequest) {
+		scanRequest = scanRequest.clone();
+		scanRequest.withTableName(buildPrefixedTablename(scanRequest.getTableName()));
+		logger.info("scanRequest: " + scanRequest);
+		return getAmazonDynamoDB().scan(scanRequest);
+	}
 
-    // TODO paging
-    // TODO assumes prefix does not contain delimiter
-    // TODO assumes everything that starts with prefix is in fact an MT table (ok?)
-    // TODO assumes context does not contain delimiter
-    @Override
-    public List<MTStreamDescription> listStreams(IRecordProcessorFactory factory) {
-        String prefix = tablePrefix.orElse("");
-        logger.info("listStreams: " + prefix);
-        return listAllTables().stream() //
-                .filter(n -> n.startsWith(prefix) && n.indexOf(delimiter, prefix.length()) >= 0) //
-                .map(n -> getAmazonDynamoDB().describeTable(n).getTable()) // TODO handle table not exists
-                .filter(d -> Optional.ofNullable(d.getStreamSpecification()).map(StreamSpecification::isStreamEnabled)
-                        .orElse(false)) // only include tables with streaming enabled
-                .map(d -> new MTStreamDescription() //
-                        .withLabel(d.getTableName()) // use raw name as label
-                        .withArn(d.getLatestStreamArn()) //
-                        .withRecordProcessorFactory(newAdapter(factory, d.getTableName().substring(prefix.length())))) //
-                .collect(Collectors.toList());
-    }
+	public UpdateItemResult updateItem(UpdateItemRequest updateItemRequest) {
+		updateItemRequest = updateItemRequest.clone();
+		updateItemRequest
+				.withTableName(buildPrefixedTablename(updateItemRequest.getTableName()));
+		logger.info("updateItemRequest: " + updateItemRequest);
+		return getAmazonDynamoDB().updateItem(updateItemRequest);
+	}
 
-    private IRecordProcessorFactory newAdapter(IRecordProcessorFactory factory, String tableName) {
-        int idx = tableName.indexOf(delimiter);
-        String tenant = tableName.substring(0, idx);
-        String name = tableName.substring(idx + delimiter.length(), tableName.length());
-        logger.info("newAdapter: " + name);
-        return () -> new RecordProcessor(tenant, name, factory.createProcessor());
-    }
+	// TODO paging
+	// TODO assumes prefix does not contain delimiter
+	// TODO assumes everything that starts with prefix is in fact an MT table
+	// (ok?)
+	// TODO assumes context does not contain delimiter
+	@Override
+	public List<MTStreamDescription> listStreams(IRecordProcessorFactory factory) {
+		String prefix = tablePrefix.orElse("");
+		logger.info("listStreams: " + prefix);
+		return listAllTables().stream() //
+				.filter(n -> n.startsWith(prefix)
+						&& n.indexOf(delimiter, prefix.length()) >= 0) //
+				.map(n -> getAmazonDynamoDB().describeTable(n).getTable()) // TODO
+																			// handle
+																			// table
+																			// not
+																			// exists
+				.filter(d -> Optional.ofNullable(d.getStreamSpecification())
+						.map(StreamSpecification::isStreamEnabled).orElse(false)) // only
+																					// include
+																					// tables
+																					// with
+																					// streaming
+																					// enabled
+				.map(d -> new MTStreamDescription() //
+						.withLabel(d.getTableName()) // use raw name as label
+						.withArn(d.getLatestStreamArn()) //
+						.withRecordProcessorFactory(newAdapter(factory,
+								d.getTableName().substring(prefix.length())))) //
+				.collect(Collectors.toList());
+	}
 
-    private static class RecordProcessor implements IRecordProcessor {
-        private final String tenant;
-        private final String tableName;
-        private final IRecordProcessor processor;
+	private IRecordProcessorFactory newAdapter(IRecordProcessorFactory factory,
+			String tableName) {
+		int idx = tableName.indexOf(delimiter);
+		String tenant = tableName.substring(0, idx);
+		String name = tableName.substring(idx + delimiter.length(), tableName.length());
+		logger.info("newAdapter: " + name);
+		return () -> new RecordProcessor(tenant, name, factory.createProcessor());
+	}
 
-        public RecordProcessor(String tenant, String tableName, IRecordProcessor processor) {
-            this.tenant = tenant;
-            this.tableName = tableName;
-            this.processor = processor;
-            logger.info("RecordProcessor: " + tenant + ", " + tableName);
-        }
+	private static class RecordProcessor implements IRecordProcessor {
+		private final String tenant;
+		private final String tableName;
+		private final IRecordProcessor processor;
 
-        @Override
-        public void initialize(InitializationInput initializationInput) {
-            processor.initialize(initializationInput);
-        }
+		public RecordProcessor(String tenant, String tableName,
+				IRecordProcessor processor) {
+			this.tenant = tenant;
+			this.tableName = tableName;
+			this.processor = processor;
+			logger.info("RecordProcessor: " + tenant + ", " + tableName);
+		}
 
-        @Override
-        public void processRecords(ProcessRecordsInput processRecordsInput) {
-            List<com.amazonaws.services.kinesis.model.Record> records = processRecordsInput.getRecords().stream()
-                    .map(RecordAdapter.class::cast).map(this::toMTRecord).collect(toList());
-            processor.processRecords(processRecordsInput.withRecords(records));
-        }
+		@Override
+		public void initialize(InitializationInput initializationInput) {
+			processor.initialize(initializationInput);
+		}
 
-        private com.amazonaws.services.kinesis.model.Record toMTRecord(RecordAdapter adapter) {
-            Record r = adapter.getInternalObject();
-            return new RecordAdapter(new MTRecord() //
-                    .withAwsRegion(r.getAwsRegion()) //
-                    .withDynamodb(r.getDynamodb()) //
-                    .withEventID(r.getEventID()) //
-                    .withEventName(r.getEventName()) //
-                    .withEventSource(r.getEventSource()) //
-                    .withEventVersion(r.getEventVersion()) //
-                    .withContext(tenant) //
-                    .withTableName(tableName));
-        }
+		@Override
+		public void processRecords(ProcessRecordsInput processRecordsInput) {
+			List<com.amazonaws.services.kinesis.model.Record> records = processRecordsInput
+					.getRecords().stream().map(RecordAdapter.class::cast)
+					.map(this::toMTRecord).collect(toList());
+			processor.processRecords(processRecordsInput.withRecords(records));
+		}
 
-        @Override
-        public void shutdown(ShutdownInput shutdownInput) {
-            logger.info("shutdown: " + shutdownInput);
-            processor.shutdown(shutdownInput);
-        }
+		private com.amazonaws.services.kinesis.model.Record toMTRecord(
+				RecordAdapter adapter) {
+			Record r = adapter.getInternalObject();
+			return new RecordAdapter(new MTRecord() //
+					.withAwsRegion(r.getAwsRegion()) //
+					.withDynamodb(r.getDynamodb()) //
+					.withEventID(r.getEventID()) //
+					.withEventName(r.getEventName()) //
+					.withEventSource(r.getEventSource()) //
+					.withEventVersion(r.getEventVersion()) //
+					.withContext(tenant) //
+					.withTableName(tableName));
+		}
 
-    }
+		@Override
+		public void shutdown(ShutdownInput shutdownInput) {
+			logger.info("shutdown: " + shutdownInput);
+			processor.shutdown(shutdownInput);
+		}
 
-    public static MTAmazonDynamoDBBuilder builder() {
-        return new MTAmazonDynamoDBBuilder();
-    }
+	}
 
-    public static class MTAmazonDynamoDBBuilder {
+	public static MTAmazonDynamoDBBuilder builder() {
+		return new MTAmazonDynamoDBBuilder();
+	}
 
-        private AmazonDynamoDB amazonDynamoDB;
-        private MTAmazonDynamoDBContextProvider mtContext;
-        private String delimiter;
-        private Optional<String> tablePrefix;
+	public static class MTAmazonDynamoDBBuilder {
 
-        public MTAmazonDynamoDBBuilder withAmazonDynamoDB(AmazonDynamoDB amazonDynamoDB) {
-            this.amazonDynamoDB = amazonDynamoDB;
-            return this;
-        }
+		private AmazonDynamoDB amazonDynamoDB;
+		private MTAmazonDynamoDBContextProvider mtContext;
+		private String delimiter;
+		private Optional<String> tablePrefix;
 
-        public MTAmazonDynamoDBBuilder withContext(MTAmazonDynamoDBContextProvider mtContext) {
-            this.mtContext = mtContext;
-            return this;
-        }
+		public MTAmazonDynamoDBBuilder withAmazonDynamoDB(AmazonDynamoDB amazonDynamoDB) {
+			this.amazonDynamoDB = amazonDynamoDB;
+			return this;
+		}
 
-        public MTAmazonDynamoDBBuilder withDelimiter(String delimiter) {
-            this.delimiter = delimiter;
-            return this;
-        }
+		public MTAmazonDynamoDBBuilder withContext(
+				MTAmazonDynamoDBContextProvider mtContext) {
+			this.mtContext = mtContext;
+			return this;
+		}
 
-        public MTAmazonDynamoDBBuilder withTablePrefix(String tablePrefix) {
-            this.tablePrefix = Optional.of(tablePrefix);
-            return this;
-        }
+		public MTAmazonDynamoDBBuilder withDelimiter(String delimiter) {
+			this.delimiter = delimiter;
+			return this;
+		}
 
-        public MTAmazonDynamoDBByTable build() {
-            setDefaults();
-            Preconditions.checkNotNull(amazonDynamoDB, "amazonDynamoDB is required");
-            Preconditions.checkNotNull(mtContext, "mtContext is required");
-            return new MTAmazonDynamoDBByTable(mtContext, amazonDynamoDB, delimiter, tablePrefix);
-        }
+		public MTAmazonDynamoDBBuilder withTablePrefix(String tablePrefix) {
+			this.tablePrefix = Optional.of(tablePrefix);
+			return this;
+		}
 
-        private void setDefaults() {
-            if (delimiter == null) {
-                delimiter = ".";
-            }
-            if (tablePrefix == null) {
-                tablePrefix = Optional.empty();
-            }
-        }
+		public MTAmazonDynamoDBByTable build() {
+			setDefaults();
+			Preconditions.checkNotNull(amazonDynamoDB, "amazonDynamoDB is required");
+			Preconditions.checkNotNull(mtContext, "mtContext is required");
+			return new MTAmazonDynamoDBByTable(mtContext, amazonDynamoDB, delimiter,
+					tablePrefix);
+		}
 
-    }
+		private void setDefaults() {
+			if (delimiter == null) {
+				delimiter = ".";
+			}
+			if (tablePrefix == null) {
+				tablePrefix = Optional.empty();
+			}
+		}
 
-    @VisibleForTesting
-    String buildPrefixedTablename(String virtualTablename) {
-        logger.info("buildPrefixedTablename: " + (tablePrefix.orElse(""))
-        		+ getMTContext().getContext() + delimiter + virtualTablename);
-        return (tablePrefix.orElse("")) + getMTContext().getContext() + delimiter + virtualTablename;
-    }
+	}
+
+	@VisibleForTesting
+	String buildPrefixedTablename(String virtualTablename) {
+		logger.info("buildPrefixedTablename: " + (tablePrefix.orElse(""))
+				+ getMTContext().getContext() + delimiter + virtualTablename);
+		return (tablePrefix.orElse("")) + getMTContext().getContext() + delimiter
+				+ virtualTablename;
+	}
 
 }

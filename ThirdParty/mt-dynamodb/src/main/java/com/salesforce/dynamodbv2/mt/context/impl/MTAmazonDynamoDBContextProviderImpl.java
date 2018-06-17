@@ -15,34 +15,43 @@ import java.util.Map;
 /**
  * @author msgroi
  */
-public class MTAmazonDynamoDBContextProviderImpl implements MTAmazonDynamoDBContextProvider {
+public class MTAmazonDynamoDBContextProviderImpl
+		implements MTAmazonDynamoDBContextProvider {
 
-    private static final String CONTEXT_KEY = "multitenant-context";
-    private final ThreadLocal<Object> threadLocal = new ThreadLocal<>();
+	private static final String CONTEXT_KEY = "multitenant-context";
+	private final ThreadLocal<Object> threadLocal = new ThreadLocal<>();
 
-    @Override
-    public void setContext(String tenantId) {
-        getContextMap().put(CONTEXT_KEY, tenantId);
-    }
+	public MTAmazonDynamoDBContextProviderImpl() {
+	}
 
-    @Override
-    public String getContext() {
-        String value = getContextMap().get(CONTEXT_KEY);
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalStateException("no context available");
-        } else {
-            return value;
-        }
-    }
+	public MTAmazonDynamoDBContextProviderImpl(String tenantId) {
+		this();
+		this.setContext(tenantId);
+	}
 
-    @SuppressWarnings("unchecked")
-    private Map<String, String> getContextMap() {
-        Map<String, String> context = (Map<String, String>) threadLocal.get();
-        if (context == null) {
-            context = new HashMap<>();
-            threadLocal.set(context);
-        }
-        return context;
-    }
+	@Override
+	public void setContext(String tenantId) {
+		getContextMap().put(CONTEXT_KEY, tenantId);
+	}
+
+	@Override
+	public String getContext() {
+		String value = getContextMap().get(CONTEXT_KEY);
+		if (value == null || value.trim().isEmpty()) {
+			throw new IllegalStateException("no context available");
+		} else {
+			return value;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, String> getContextMap() {
+		Map<String, String> context = (Map<String, String>) threadLocal.get();
+		if (context == null) {
+			context = new HashMap<>();
+			threadLocal.set(context);
+		}
+		return context;
+	}
 
 }
