@@ -315,7 +315,7 @@ public class MTAmazonDynamoDBByTable extends MTAmazonDynamoDBBase {
 			// Reset the tenant id if exists in system properties.
 			String tenantId = System.getProperty("multitenant.context.key");
 			getMTContext().setContext(tenantId);
-			System.out.println("Tenant has been set as: " + tenantId);
+			logger.info("Tenant has been set as: " + tenantId);
 		}
 	}
 
