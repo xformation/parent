@@ -176,19 +176,12 @@ public class MTAmazonDynamoDBByTable extends MTAmazonDynamoDBBase {
 		logger.info("listStreams: " + prefix);
 		return listAllTables().stream() //
 				.filter(n -> n.startsWith(prefix)
-						&& n.indexOf(delimiter, prefix.length()) >= 0) //
-				.map(n -> getAmazonDynamoDB().describeTable(n).getTable()) // TODO
-																			// handle
-																			// table
-																			// not
-																			// exists
+						&& n.indexOf(delimiter, prefix.length()) >= 0)
+				// TODO  handle table not exists
+				.map(n -> getAmazonDynamoDB().describeTable(n).getTable())
 				.filter(d -> Optional.ofNullable(d.getStreamSpecification())
-						.map(StreamSpecification::isStreamEnabled).orElse(false)) // only
-																					// include
-																					// tables
-																					// with
-																					// streaming
-																					// enabled
+						// only include tables with streaming enabled
+						.map(StreamSpecification::isStreamEnabled).orElse(false))
 				.map(d -> new MTStreamDescription() //
 						.withLabel(d.getTableName()) // use raw name as label
 						.withArn(d.getLatestStreamArn()) //
@@ -307,10 +300,29 @@ public class MTAmazonDynamoDBByTable extends MTAmazonDynamoDBBase {
 
 	@VisibleForTesting
 	String buildPrefixedTablename(String virtualTablename) {
+		setTenantIfNotExists();
 		logger.info("buildPrefixedTablename: " + (tablePrefix.orElse(""))
 				+ getMTContext().getContext() + delimiter + virtualTablename);
 		return (tablePrefix.orElse("")) + getMTContext().getContext() + delimiter
 				+ virtualTablename;
+	}
+
+	private void setTenantIfNotExists() {
+		try {
+			getMTContext().getContext();
+		} catch (IllegalStateException ise) {
+			System.out.println("*********System properties");
+			for (Object key : System.getProperties().keySet()) {
+				System.out.println(key +": " + System.getProperty(key.toString()));
+			}
+			System.out.println("*********System env properties");
+			for (String key : System.getenv().keySet()) {
+				System.out.println(key +": " + System.getProperty(key));
+			}
+			String tenantId = System.getProperty("multitenant.context.key");
+			getMTContext().setContext(tenantId);
+			System.out.println("Tenant has been set as: " + tenantId);
+		}
 	}
 
 }

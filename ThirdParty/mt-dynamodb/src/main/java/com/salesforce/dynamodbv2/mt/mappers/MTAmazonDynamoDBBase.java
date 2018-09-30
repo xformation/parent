@@ -10,6 +10,7 @@ package com.salesforce.dynamodbv2.mt.mappers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.ResponseMetadata;
@@ -108,13 +109,31 @@ public class MTAmazonDynamoDBBase implements MTAmazonDynamoDB {
 
     private volatile AmazonDynamoDBWaiters waiters;
 
+    private static void isValidContext(MTAmazonDynamoDBContextProvider mtContext) {
+    	if (Objects.isNull(mtContext)) {
+    		throw new RuntimeException("Context should not be false");
+    	} else {
+    		String ctx = mtContext.getContext();
+    		if (Objects.isNull(ctx) || ctx.trim().isEmpty()) {
+    			try {
+    				throw new RuntimeException("Context is not set with property value.");
+    			} catch (Throwable th) {
+    				th.printStackTrace();
+    			}
+    			String tenantId = System.getProperty("multitenant.context.key");
+        		mtContext.setContext(tenantId);
+    		}
+    	}
+	}
+
     MTAmazonDynamoDBBase(MTAmazonDynamoDBContextProvider mtContext,
                          AmazonDynamoDB amazonDynamoDB) {
+    	isValidContext(mtContext);
         this.mtContext = mtContext;
         this.amazonDynamoDB = amazonDynamoDB;
     }
 
-    public AmazonDynamoDB getAmazonDynamoDB() {
+	public AmazonDynamoDB getAmazonDynamoDB() {
         return amazonDynamoDB;
     }
 
