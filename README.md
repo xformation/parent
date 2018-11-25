@@ -17,6 +17,9 @@ To get started build the build the latest sources with Maven 3 and Java 8
 
 It just a library project so no need to run it.
 
+## Releases
+	- 2.0.0-SNAPSHOT projects based on spring-boot 2.1.0
+	- 1.0.0-SNAPSHOT projects based on spring-boot 1.5.7
 
 ### Who do I talk to? ###
 	Please mail us on
