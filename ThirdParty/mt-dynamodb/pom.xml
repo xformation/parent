@@ -22,7 +22,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>5.0.2</junit.version>
         <logback.version>1.2.3</logback.version>
-        <aws.sdk.version>1.11.342</aws.sdk.version>
+        <aws.sdk.version>1.11.550</aws.sdk.version>
         <dynamodb-streams-kinesis-adapter.version>1.2.2</dynamodb-streams-kinesis-adapter.version>
         <hamcrest.version>1.3</hamcrest.version>
     </properties>
