@@ -311,7 +311,7 @@ public class MTAmazonDynamoDBByTable extends MTAmazonDynamoDBBase {
 		try {
 			getMTContext().getContext();
 		} catch (IllegalStateException ise) {
-			ise.printStackTrace();
+			logger.error(ise.getMessage());
 			// Reset the tenant id if exists in system properties.
 			String tenantId = System.getProperty("multitenant.context.key");
 			getMTContext().setContext(tenantId);
