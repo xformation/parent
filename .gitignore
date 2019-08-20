@@ -26,6 +26,5 @@ nbdist/
 oakRepo
 
 data
-/.classpath
 node/
 node_modules/
